@@ -1,38 +1,74 @@
-const CACHE_NAME = 'pwa-cache-v1';
+const CACHE_NAME = 'pwa-cache-v2';
 const urlsToCache = [
-  '/index.html',
-  '/manifest.json',
-  '/service-worker.js'
-  // در صورت وجود فایل‌های CSS یا JS اضافی، مسیرشان را نیز اضافه کنید.
+  './',
+  './index.html',
+  './manifest.json',
+  './service-worker.js',
+  './icons/icon-192x192.png',
+  './icons/icon-512x512.png'
+  // سایر منابع استاتیک
 ];
 
-self.addEventListener('install', function(event) {
-  console.log('Service Worker: Installing and caching resources.');
+self.addEventListener('install', (event) => {
+  console.log('Service Worker: Installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(urlsToCache);
+      .then((cache) => {
+        console.log('Caching core assets');
+        return cache.addAll(urlsToCache).catch((error) => {
+          console.error('Failed to cache:', error);
+        });
       })
   );
 });
 
-self.addEventListener('fetch', function(event) {
-  // تلاش برای واکشی منابع از کش؛ در صورت عدم وجود، از شبکه می‌گیرد.
+self.addEventListener('fetch', (event) => {
+  // فقط درخواست‌های GET را مدیریت می‌کنیم
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
     caches.match(event.request)
-      .then(function(response) {
-        return response || fetch(event.request);
+      .then((cachedResponse) => {
+        // اگر در کش وجود داشت، برگردانده می‌شود
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+
+        // در غیر این صورت از شبکه دریافت می‌شود
+        return fetch(event.request)
+          .then((response) => {
+            // فقط پاسخ‌های معتبر را کش می‌کنیم
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+
+            // پاسخ را برای استفاده بعدی کش می‌کنیم
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          })
+          .catch(() => {
+            // Fallback برای زمانی که هم کش و هم شبکه خطا می‌دهند
+            return new Response('<h1>حالت آفلاین</h1>', {
+              headers: { 'Content-Type': 'text/html' }
+            });
+          });
       })
   );
 });
 
-self.addEventListener('activate', function(event) {
-  console.log('Service Worker: Activating and cleaning up old caches.');
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker: Activating...');
   event.waitUntil(
-    caches.keys().then(function(cacheNames) {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.map(function(cacheName) {
+        cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
