@@ -10,8 +10,8 @@
       text-align: center;
       font-family: Arial, sans-serif;
       background-color: #f2f2f2;
-      padding: 20px;
       margin: 0;
+      padding: 20px;
     }
     h1 {
       color: #333;
@@ -34,7 +34,7 @@
     }
   </style>
   <script>
-    // ثبت سرویس ورکر در صورت پشتیبانی مرورگر
+    // ثبت Service Worker برای پشتیبانی PWA (در صورت پشتیبانی توسط مرورگر)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js')
         .then(function(registration) {
@@ -48,7 +48,8 @@
 </head>
 <body>
   <h1>به PWA وب اپ خوش آمدید</h1>
-  <p>برای اجرای برنامه وب اپ، دکمه زیر را فشار دهید.</p>
+  <p>برای اجرای برنامه وب اپ، دکمه زیر را کلیک کنید.</p>
+  <!-- به دلیل محدودیت‌های امنیتی Google Apps Script (clickjacking prevention) از iframe اجتناب شده است -->
   <button onclick="window.open('https://script.google.com/macros/s/AKfycbwibn5DKrR8Cv5u_aNTMZaV8ep7iMMAjSzJRj60aKcsoWQH0652zkt-bBaHVUtgL4PlNg/exec', '_blank');">
     اجرای وب اپ
   </button>
