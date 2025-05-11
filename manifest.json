@@ -1,20 +1,38 @@
 {
-  "name": "PWA وب اپ",
-  "short_name": "PWA",
+  "name": "وب اپ پیشرونده",
+  "short_name": "وب اپ",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007BFF",
+  "description": "یک برنامه وب پیشرونده با قابلیت نصب روی دستگاه",
+  "lang": "fa",
+  "dir": "rtl",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon2.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
       "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "صفحه اصلی برنامه"
     }
   ]
 }
