@@ -1,57 +1,214 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PWA وب اپ</title>
+  <meta name="theme-color" content="#007BFF">
+  <meta name="description" content="برنامه پیشرونده وب (PWA) برای دسترسی آسان به اپلیکیشن">
+  <title>برنامه وب پیشرونده | PWA وب اپ</title>
   <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/favicon.ico">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <style>
+    :root {
+      --primary-color: #007BFF;
+      --primary-dark: #0056b3;
+      --text-color: #333;
+      --secondary-text: #555;
+      --background: #f2f2f2;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
     body {
       text-align: center;
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
-      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--background);
       padding: 20px;
+      line-height: 1.6;
+      color: var(--text-color);
     }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
     h1 {
-      color: #333;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 2rem;
     }
+    
     p {
-      color: #555;
+      color: var(--secondary-text);
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
     }
-    button {
-      font-size: 18px;
+    
+    .btn {
+      display: inline-block;
+      font-size: 1.1rem;
       padding: 12px 24px;
-      margin-top: 20px;
-      background-color: #007BFF;
-      color: #fff;
+      background-color: var(--primary-color);
+      color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
     }
-    button:hover {
-      background-color: #0056b3;
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    
+    .feature {
+      flex: 1 1 200px;
+      padding: 1rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      color: var(--primary-color);
+    }
+    
+    footer {
+      margin-top: 2rem;
+      color: var(--secondary-text);
+      font-size: 0.9rem;
+    }
+    
+    /* حالت آفلاین */
+    .offline-message {
+      display: none;
+      padding: 10px;
+      background-color: #ffcccc;
+      color: #cc0000;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
+      }
     }
   </style>
-  <script>
-    // ثبت Service Worker برای پشتیبانی PWA (در صورت پشتیبانی توسط مرورگر)
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(function(registration) {
-          console.log("Service Worker registered with scope:", registration.scope);
-        })
-        .catch(function(error) {
-          console.error("Service Worker registration failed:", error);
-        });
-    }
-  </script>
 </head>
 <body>
-  <h1>به PWA وب اپ خوش آمدید</h1>
-  <p>برای اجرای برنامه وب اپ، دکمه زیر را کلیک کنید.</p>
-  <!-- به دلیل محدودیت‌های امنیتی Google Apps Script (clickjacking prevention) از iframe اجتناب شده است -->
-  <button onclick="window.open('https://script.google.com/macros/s/AKfycbwibn5DKrR8Cv5u_aNTMZaV8ep7iMMAjSzJRj60aKcsoWQH0652zkt-bBaHVUtgL4PlNg/exec', '_blank');">
-    اجرای وب اپ
-  </button>
+  <div class="container">
+    <div class="offline-message" id="offlineMessage">
+      شما در حالت آفلاین هستید. برخی امکانات ممکن است در دسترس نباشند.
+    </div>
+    
+    <h1>به برنامه وب پیشرونده خوش آمدید</h1>
+    <p>این برنامه با فناوری PWA توسعه یافته و می‌تواند مانند یک اپلیکیشن موبایل نصب و استفاده شود.</p>
+    
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">📱</div>
+        <h3>نصب پذیر</h3>
+        <p>می‌توانید این برنامه را روی دستگاه خود نصب کنید</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>سریع</h3>
+        <p>بارگذاری سریع حتی با اتصال اینترنت ضعیف</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🔌</div>
+        <h3>آفلاین</h3>
+        <p>برخی امکانات بدون اینترنت نیز کار می‌کنند</p>
+      </div>
+    </div>
+    
+    <button class="btn" id="launchBtn">
+      اجرای برنامه
+    </button>
+    
+    <div id="installContainer" style="margin-top: 1rem;"></div>
+    
+    <footer>
+      <p>© 2023 برنامه وب پیشرونده. تمام حقوق محفوظ است.</p>
+    </footer>
+  </div>
+
+  <script>
+    // ثبت Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('ServiceWorker ثبت شد با محدوده:', registration.scope);
+          })
+          .catch(error => {
+            console.error('خطا در ثبت ServiceWorker:', error);
+          });
+      });
+    }
+    
+    // بررسی وضعیت آنلاین/آفلاین
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    
+    function updateOnlineStatus() {
+      const offlineMessage = document.getElementById('offlineMessage');
+      if (navigator.onLine) {
+        offlineMessage.style.display = 'none';
+      } else {
+        offlineMessage.style.display = 'block';
+      }
+    }
+    
+    // اجرای برنامه
+    document.getElementById('launchBtn').addEventListener('click', () => {
+      window.open(
+        'https://script.google.com/macros/s/AKfycbwibn5DKrR8Cv5u_aNTMZaV8ep7iMMAjSzJRj60aKcsoWQH0652zkt-bBaHVUtgL4PlNg/exec', 
+        '_blank'
+      );
+    });
+    
+    // نمایش دکمه نصب PWA (در صورت پشتیبانی مرورگر)
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      const installContainer = document.getElementById('installContainer');
+      const installBtn = document.createElement('button');
+      installBtn.className = 'btn';
+      installBtn.textContent = 'نصب برنامه';
+      installBtn.style.marginTop = '10px';
+      
+      installBtn.addEventListener('click', () => {
+        e.prompt();
+        installBtn.style.display = 'none';
+      });
+      
+      installContainer.appendChild(installBtn);
+    });
+  </script>
 </body>
 </html>
