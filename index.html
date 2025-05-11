@@ -7,15 +7,11 @@
   <meta name="description" content="برنامه پیشرونده وب (PWA) برای دسترسی آسان به اپلیکیشن">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="apple-touch-icon" 
-        href="/icons/icon-192*192.png">
+  <meta name="apple-mobile-web-app-title" content="وب اپ">
   <title>برنامه وب پیشرونده | PWA وب اپ</title>
-  <link rel="manifest"
-        href="manifest.json">
-  <link rel="icon"
-        href="icons/icon-144*144.png">
-  <link rel="apple-touch-icon" 
-        href="/icons/icon-144*144.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-144x144.png">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
   <style>
     :root {
       --primary-color: #007BFF;
@@ -161,15 +157,20 @@
     <div id="installContainer" style="margin-top: 1rem;"></div>
     
     <footer>
-      <p>© 2023 برنامه وب پیشرونده. تمام حقوق محفوظ است.</p>
+      <p>© <span id="currentYear"></span> برنامه وب پیشرونده. تمام حقوق محفوظ است.</p>
     </footer>
   </div>
 
   <script>
+    // نمایش سال جاری در فوتر
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    
     // ثبت Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('service-worker.js', {
+          scope: './'
+        })
           .then(registration => {
             console.log('ServiceWorker ثبت شد با محدوده:', registration.scope);
           })
@@ -180,9 +181,6 @@
     }
     
     // بررسی وضعیت آنلاین/آفلاین
-    window.addEventListener('online', updateOnlineStatus);
-    window.addEventListener('offline', updateOnlineStatus);
-    
     function updateOnlineStatus() {
       const offlineMessage = document.getElementById('offlineMessage');
       if (navigator.onLine) {
@@ -191,6 +189,10 @@
         offlineMessage.style.display = 'block';
       }
     }
+    
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus(); // بررسی اولیه وضعیت
     
     // اجرای برنامه
     document.getElementById('launchBtn').addEventListener('click', () => {
@@ -201,8 +203,12 @@
     });
     
     // نمایش دکمه نصب PWA (در صورت پشتیبانی مرورگر)
+    let deferredPrompt;
+    
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
+      deferredPrompt = e;
+      
       const installContainer = document.getElementById('installContainer');
       const installBtn = document.createElement('button');
       installBtn.className = 'btn';
@@ -210,8 +216,13 @@
       installBtn.style.marginTop = '10px';
       
       installBtn.addEventListener('click', () => {
-        e.prompt();
-        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(choiceResult => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('کاربر نصب را پذیرفت');
+          }
+          deferredPrompt = null;
+        });
       });
       
       installContainer.appendChild(installBtn);
