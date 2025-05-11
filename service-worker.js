@@ -3,7 +3,7 @@ const urlsToCache = [
   '/index.html',
   '/manifest.json',
   '/service-worker.js'
-  // در صورت وجود فایل‌های CSS یا جاوا اسکریپت اضافی آنها را اضافه کنید
+  // در صورت وجود فایل‌های CSS یا JS اضافی، مسیرشان را نیز اضافه کنید.
 ];
 
 self.addEventListener('install', function(event) {
@@ -17,7 +17,7 @@ self.addEventListener('install', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  // تلاش برای برگرداندن منبع از کش، در صورت عدم وجود، از شبکه درخواست می‌شود
+  // تلاش برای واکشی منابع از کش؛ در صورت عدم وجود، از شبکه می‌گیرد.
   event.respondWith(
     caches.match(event.request)
       .then(function(response) {
@@ -27,7 +27,7 @@ self.addEventListener('fetch', function(event) {
 });
 
 self.addEventListener('activate', function(event) {
-  console.log('Service Worker: Activating and cleaning old caches.');
+  console.log('Service Worker: Activating and cleaning up old caches.');
   event.waitUntil(
     caches.keys().then(function(cacheNames) {
       return Promise.all(
