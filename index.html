@@ -74,6 +74,14 @@
       background-color: var(--primary-dark);
     }
     
+    .btn-secondary {
+      background-color: #6c757d;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+    
     .features {
       display: flex;
       flex-wrap: wrap;
@@ -112,6 +120,36 @@
       margin-bottom: 1rem;
     }
     
+    /* راهنمای نصب */
+    .install-guide {
+      display: none;
+      margin-top: 2rem;
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: right;
+    }
+    
+    .install-guide h3 {
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+    
+    .install-guide h4 {
+      margin: 1rem 0 0.5rem;
+      color: var(--text-color);
+    }
+    
+    .install-guide ol {
+      padding-right: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .install-guide li {
+      margin-bottom: 0.5rem;
+    }
+    
     @media (max-width: 600px) {
       .container {
         padding: 1rem;
@@ -119,6 +157,10 @@
       
       h1 {
         font-size: 1.5rem;
+      }
+      
+      .feature {
+        flex: 1 1 100%;
       }
     }
   </style>
@@ -156,6 +198,38 @@
     
     <div id="installContainer" style="margin-top: 1rem;"></div>
     
+    <div class="install-guide" id="installGuide">
+      <h3>راهنمای نصب برنامه</h3>
+      
+      <div id="iosGuide">
+        <h4>برای نصب روی آیفون (iOS):</h4>
+        <ol>
+          <li>در مرورگر Safari، دکمه Share (مربع با فلش رو به بالا) در پایین صفحه را بزنید</li>
+          <li>گزینه "Add to Home Screen" را انتخاب کنید</li>
+          <li>نام برنامه را تأیید و روی "Add" کلیک کنید</li>
+          <li>برنامه در صفحه اصلی شما ظاهر خواهد شد</li>
+        </ol>
+      </div>
+      
+      <div id="androidGuide">
+        <h4>برای نصب روی اندروید:</h4>
+        <ol>
+          <li>روی دکمه "نصب برنامه" در بالا کلیک کنید</li>
+          <li>در پنجره ظاهر شده "نصب" را انتخاب کنید</li>
+          <li>پس از نصب، برنامه در صفحه اصلی شما ظاهر می‌شود</li>
+        </ol>
+        <p>اگر دکمه نصب را نمی‌بینید:</p>
+        <ol>
+          <li>در مرورگر Chrome، منوی سه نقطه (⋮) را انتخاب کنید</li>
+          <li>گزینه "Install app" یا "Add to Home screen" را انتخاب کنید</li>
+        </ol>
+      </div>
+      
+      <button id="closeGuideBtn" class="btn btn-secondary">
+        بستن راهنما
+      </button>
+    </div>
+    
     <footer>
       <p>© <span id="currentYear"></span> برنامه وب پیشرونده. تمام حقوق محفوظ است.</p>
     </footer>
@@ -192,7 +266,7 @@
     
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
-    updateOnlineStatus(); // بررسی اولیه وضعیت
+    updateOnlineStatus();
     
     // اجرای برنامه
     document.getElementById('launchBtn').addEventListener('click', () => {
@@ -202,30 +276,73 @@
       );
     });
     
-    // نمایش دکمه نصب PWA (در صورت پشتیبانی مرورگر)
+    // نمایش دکمه نصب PWA و راهنما
     let deferredPrompt;
+    let showInstallButton = true;
     
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       
-      const installContainer = document.getElementById('installContainer');
-      const installBtn = document.createElement('button');
-      installBtn.className = 'btn';
-      installBtn.textContent = 'نصب برنامه';
-      installBtn.style.marginTop = '10px';
-      
-      installBtn.addEventListener('click', () => {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(choiceResult => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('کاربر نصب را پذیرفت');
-          }
-          deferredPrompt = null;
+      if (showInstallButton) {
+        const installContainer = document.getElementById('installContainer');
+        const installBtn = document.createElement('button');
+        installBtn.className = 'btn';
+        installBtn.textContent = 'نصب برنامه';
+        installBtn.style.marginTop = '10px';
+        
+        installBtn.addEventListener('click', () => {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(choiceResult => {
+            if (choiceResult.outcome === 'accepted') {
+              console.log('کاربر نصب را پذیرفت');
+              localStorage.setItem('pwaInstalled', 'true');
+            }
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+          });
         });
-      });
+        
+        installContainer.appendChild(installBtn);
+      }
+    });
+    
+    // نمایش راهنمای نصب برای دستگاه‌های مختلف
+    function showInstallGuide() {
+      if (localStorage.getItem('pwaInstalled') === 'true') return;
       
-      installContainer.appendChild(installBtn);
+      const installGuide = document.getElementById('installGuide');
+      const iosGuide = document.getElementById('iosGuide');
+      const androidGuide = document.getElementById('androidGuide');
+      
+      // تشخیص دستگاه
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/.test(navigator.userAgent);
+      
+      iosGuide.style.display = isIOS ? 'block' : 'none';
+      androidGuide.style.display = isAndroid ? 'block' : 'none';
+      
+      if (isIOS || isAndroid) {
+        installGuide.style.display = 'block';
+      }
+    }
+    
+    // دکمه بستن راهنما
+    document.getElementById('closeGuideBtn').addEventListener('click', () => {
+      document.getElementById('installGuide').style.display = 'none';
+      localStorage.setItem('pwaInstallGuideClosed', 'true');
+    });
+    
+    // نمایش راهنما پس از 8 ثانیه (اگر کاربر قبلاً آن را نبسته باشد)
+    if (localStorage.getItem('pwaInstallGuideClosed') !== 'true') {
+      setTimeout(showInstallGuide, 8000);
+    }
+    
+    // ذخیره وضعیت نصب
+    window.addEventListener('appinstalled', () => {
+      localStorage.setItem('pwaInstalled', 'true');
+      document.getElementById('installGuide').style.display = 'none';
     });
   </script>
 </body>
